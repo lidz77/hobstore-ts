@@ -21,6 +21,7 @@ import { AppBar, Drawer, DrawerHeader } from "../components/Drawer";
 import IconButton from "@mui/material/IconButton";
 import { Toolbar, Typography } from "@mui/material/";
 import Categories from "../features/admin/categories/Categories";
+import Products from "../features/admin/products/Products";
 
 const Admin = (props: any) => {
   const theme = useTheme();
@@ -38,12 +39,12 @@ const Admin = (props: any) => {
           icon: <CategoryIcon />,
           component: <Categories />,
         };
-      //   case "Products":
-      //     return {
-      //       route: ROUTES.productsAdmin(),
-      //       icon: <InventoryIcon />,
-      //       component: <Products />,
-      //     };
+      case "Products":
+        return {
+          route: ROUTES.productsAdmin(),
+          icon: <InventoryIcon />,
+          component: <Products />,
+        };
       default:
         return {
           route: ROUTES.categoriesAdmin(),

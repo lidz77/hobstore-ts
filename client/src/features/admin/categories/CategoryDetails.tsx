@@ -12,11 +12,12 @@ import {
 import { Close, Done } from "@mui/icons-material/";
 import React, { FormEvent, useEffect, useState } from "react";
 import LoadingBackdrop from "../../../components/LoadingBackdrop";
+import { CategoriesState } from "./categoriesSlice";
 
 interface CategoryDetailsProps {
   open: boolean;
   handleDialog: () => void;
-  categoryDetails: any;
+  categoryDetails: CategoriesState["categoryDetails"];
   isLoading: boolean;
   handleUpdateCategory: (id: number, data: object) => void;
   handleCreateCategory: (data: object) => void;
@@ -40,12 +41,12 @@ const CategoryDetails = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    categoryDetails.id
-      ? handleUpdateCategory(categoryDetails.id, {
+    categoryDetails.id === 0
+      ? handleCreateCategory({ name: name, description: description })
+      : handleUpdateCategory(categoryDetails.id, {
           name: name,
           description: description,
-        })
-      : handleCreateCategory({ name: name, description: description });
+        });
     handleDialog();
   };
 
@@ -58,7 +59,7 @@ const CategoryDetails = ({
           <DialogTitle
             sx={{ m: 0, p: 2, padding: (theme) => theme.spacing(2) }}
           >
-            Edit or add goes there{" "}
+            {categoryDetails.id === 0 ? "Add new category" : "Edit category"}
             <IconButton
               sx={{
                 position: "absolute",

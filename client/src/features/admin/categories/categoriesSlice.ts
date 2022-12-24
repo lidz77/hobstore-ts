@@ -14,7 +14,7 @@ const emptyCategory = (): Category => ({
   description: "",
 });
 
-interface CategoriesState {
+export interface CategoriesState {
   categoryDetails: Category;
   categoriesList: Category[];
   isLoading: boolean;
@@ -112,7 +112,7 @@ export const categoriesSlice = createSlice({
     setSearchTerm: (state, action: PayloadAction<string>) => {
       state.searchTerm = action.payload;
     },
-    selectItem: (state, action) => {
+    selectItem: (state, action: PayloadAction<number>) => {
       state.selectedItems.includes(action.payload)
         ? (state.selectedItems = state.selectedItems.filter(
             (item) => item !== action.payload
