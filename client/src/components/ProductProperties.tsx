@@ -1,9 +1,11 @@
 import {
+  Box,
   FormControl,
   InputLabel,
   MenuItem,
   OutlinedInput,
   Select,
+  SelectChangeEvent,
 } from "@mui/material";
 import React, { useState } from "react";
 import { ProductProp } from "../features/admin/products/productPropsSlice";
@@ -20,36 +22,50 @@ const MenuProps = {
 
 interface ProductPropertiesProps {
   propsList: object;
-  // propsList: ProductProp[];
+  handleSelectProductProp: (
+    propName: string,
+    productPropType: ProductProp
+  ) => void;
 }
 
-const ProductProperties = ({ propsList }: ProductPropertiesProps) => {
-  const [prop, setProp] = useState<ProductProp>();
+const ProductProperties = ({
+  propsList,
+  handleSelectProductProp,
+}: ProductPropertiesProps) => {
+  const [name, setName] = useState<string>("");
   const propName = Object.keys(propsList)[0];
+  const propsArray = Object.values(propsList)[0];
+  const handleSelect = (e: SelectChangeEvent<string>) => {
+    setName(e.target.value);
+    const prop = propsArray.filter(
+      (item: ProductProp) => item.name === e.target.value
+    );
+    handleSelectProductProp(propName, prop[0]);
+  };
   return (
     <FormControl sx={{ m: 1, width: 200, mt: 3 }}>
       <Select
         displayEmpty
-        value={""}
-        onChange={() => {}}
+        value={name}
+        onChange={handleSelect}
         input={<OutlinedInput />}
         renderValue={(selected) => {
           if (selected.length === 0) {
-            return <em>Select {propName}</em>;
+            return <em> Select {propName}</em>;
           }
           return selected;
         }}
-        MenuProps={MenuProps}
-        inputProps={{ "aria-label": "Without label" }}
       >
-        <MenuItem disabled>
+        <MenuItem disabled value="">
           <em>Select {propName}</em>
         </MenuItem>
-        {Object.values(propsList)[0].map((item: ProductProp) => (
-          <MenuItem key={item.id + propName} value={item.id}>
-            {item.name}
-          </MenuItem>
-        ))}
+        {propsArray.map((item: ProductProp, index: number) => {
+          return (
+            <MenuItem key={index + propName} value={item.name}>
+              {item.name}
+            </MenuItem>
+          );
+        })}
       </Select>
     </FormControl>
   );

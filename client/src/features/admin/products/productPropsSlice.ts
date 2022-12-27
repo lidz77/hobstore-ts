@@ -44,7 +44,7 @@ export const productPropsSlice = createSlice({
   name: "productProps",
   initialState,
   reducers: {
-    selectProps: (state, action: PayloadAction<number>) => {},
+    selectProps: (state, action: PayloadAction<ProductProp>) => {},
   },
   extraReducers: (builder) => {
     builder

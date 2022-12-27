@@ -1,9 +1,11 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState, AppThunk } from "../../../app/store";
 import ProductsDataService from "../../../services/products/products.services";
+import ProductDetails from "./ProductDetails";
+import { ProductProp } from "./productPropsSlice";
 
 export const loadProducts = createAsyncThunk(
-  "produtcs/loadProducts",
+  "products/loadProducts",
   async () => {
     const res = ProductsDataService.getAll()
       .then((result) => {
@@ -11,6 +13,34 @@ export const loadProducts = createAsyncThunk(
       })
       .catch((error) => {
         console.log(error);
+      });
+    return res;
+  }
+);
+
+export const createProduct = createAsyncThunk(
+  "products/createProduct",
+  async (product: Product) => {
+    const res = ProductsDataService.create(product)
+      .then((result) => {
+        return result.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    return res;
+  }
+);
+
+export const updateProduct = createAsyncThunk(
+  "products/updateProduct",
+  async (product: Product) => {
+    const res = ProductsDataService.update(product.id, product)
+      .then((result) => {
+        return result.data;
+      })
+      .catch((error) => {
+        console.log(Error);
       });
     return res;
   }
@@ -34,7 +64,7 @@ const emptyProduct = (): Product => ({
   title: "",
   description: "",
   available: false,
-  color: "#fff",
+  color: "#9c27b0",
   price: 0,
   dimension: { id: 0, name: "" },
   brand: { id: 0, name: "" },
@@ -58,7 +88,28 @@ const initialState: ProductsState = {
 export const productsSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    selectProp: (
+      state,
+      action: PayloadAction<{ propName: string; productProp: ProductProp }>
+    ) => {
+      const { propName, productProp } = action.payload;
+      state.productDetails = {
+        ...state.productDetails,
+        [propName]: productProp,
+      };
+    },
+    changeInput: (
+      state,
+      action: PayloadAction<{ field: string; text: string | number }>
+    ) => {
+      const { field, text } = action.payload;
+      state.productDetails = {
+        ...state.productDetails,
+        [field]: text,
+      };
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(loadProducts.pending, (state, action) => {
@@ -77,6 +128,6 @@ export const productsSlice = createSlice({
   },
 });
 
-export const {} = productsSlice.actions;
+export const { selectProp, changeInput } = productsSlice.actions;
 export const selectProducts = (state: RootState) => state.products;
 export default productsSlice.reducer;

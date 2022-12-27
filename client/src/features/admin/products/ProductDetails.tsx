@@ -1,5 +1,7 @@
-import { Close } from "@mui/icons-material";
+import { Close, Done } from "@mui/icons-material";
 import {
+  BottomNavigation,
+  BottomNavigationAction,
   Box,
   Dialog,
   DialogTitle,
@@ -8,18 +10,22 @@ import {
   Grid,
   IconButton,
   Input,
+  InputAdornment,
   InputLabel,
   Paper,
   Slide,
   Stack,
   Switch,
   TextField,
+  Typography,
 } from "@mui/material";
+import { CirclePicker, ColorResult } from "react-color";
 import { TransitionProps } from "@mui/material/transitions";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import LoadingBackdrop from "../../../components/LoadingBackdrop";
 import ProductProperties from "../../../components/ProductProperties";
-import { ProductPropsState } from "./productPropsSlice";
+import { ProductProp, ProductPropsState } from "./productPropsSlice";
+import { Product } from "./productsSlice";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -30,11 +36,19 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
+const colorsArray = ["#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5"];
+
 interface ProductDetailsProps {
   productsIsLoading: boolean;
   openDialog: boolean;
   productProperties: ProductPropsState;
+  productDetails: Product;
   handleLoadProductProps: () => void;
+  handleSelectProductProp: (
+    propName: string,
+    productPropType: ProductProp
+  ) => void;
+  handleInputChange: (field: string, text: string | number) => void;
 }
 
 const ProductDetails = ({
@@ -42,7 +56,12 @@ const ProductDetails = ({
   openDialog,
   productProperties,
   handleLoadProductProps,
+  handleSelectProductProp,
+  productDetails,
+  handleInputChange,
 }: ProductDetailsProps) => {
+  const [color, setColor] = useState<string>(productDetails.color);
+  const [available, setAvailabe] = useState<boolean>(productDetails.available);
   useEffect(() => {
     handleLoadProductProps();
   }, []);
@@ -88,41 +107,95 @@ const ProductDetails = ({
                   }}
                 >
                   <FormControl>
-                    <InputLabel htmlFor="product-name">Name:</InputLabel>
-                    <Input
+                    <TextField
+                      label="Product Name"
                       id="product-name"
+                      placeholder="Product Name"
                       aria-describedby="my-helper-text"
                       required
-                    ></Input>
-                    <FormControl sx={{ pt: 2 }}>
-                      <TextField
-                        label="Description"
-                        id="product-description"
-                        rows={12}
-                        placeholder="Description"
-                        multiline
-                      ></TextField>
-                    </FormControl>
+                      onBlur={(e) => {
+                        handleInputChange("title", e.target.value);
+                      }}
+                    />
                   </FormControl>
-                  <FormControlLabel control={<Switch />} label={"Available"} />
+                  <FormControl sx={{ pt: 2 }}>
+                    <TextField
+                      label="Description"
+                      id="product-description"
+                      rows={12}
+                      placeholder="Description"
+                      multiline
+                      onBlur={(e) => {
+                        handleInputChange("description", e.target.value);
+                      }}
+                    ></TextField>
+                  </FormControl>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        value={available}
+                        onChange={() => setAvailabe(!available)}
+                      />
+                    }
+                    label={"Available"}
+                  />
                 </Stack>
                 <Stack>
                   <ProductProperties
-                    propsList={{ Brand: productProperties.dimensionsList }}
+                    propsList={{ brand: productProperties.brandsList }}
+                    handleSelectProductProp={handleSelectProductProp}
                   />
                   <ProductProperties
-                    propsList={{ Dimension: productProperties.dimensionsList }}
+                    propsList={{ dimension: productProperties.dimensionsList }}
+                    handleSelectProductProp={handleSelectProductProp}
                   />
                   <ProductProperties
-                    propsList={{ Material: productProperties.materialsList }}
+                    propsList={{ material: productProperties.materialsList }}
+                    handleSelectProductProp={handleSelectProductProp}
                   />
                   <ProductProperties
-                    propsList={{ Category: productProperties.categoriesList }}
+                    propsList={{ category: productProperties.categoriesList }}
+                    handleSelectProductProp={handleSelectProductProp}
                   />
+                  <Typography variant="body1">Color:{color}</Typography>
+                  <CirclePicker
+                    color={color}
+                    onChange={(color: ColorResult) => setColor(color.hex)}
+                    colors={colorsArray}
+                  />
+                  <FormControl sx={{ pt: 2 }}>
+                    <TextField
+                      label="Price"
+                      id="product-price"
+                      placeholder="Price"
+                      type="number"
+                      onBlur={(e) => {
+                        handleInputChange("price", e.target.value);
+                      }}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">$</InputAdornment>
+                        ),
+                      }}
+                      variant="filled"
+                    />
+                  </FormControl>
                 </Stack>
               </Grid>
             </Box>
           </Paper>
+          <BottomNavigation showLabels>
+            <BottomNavigationAction
+              label="Done"
+              type="submit"
+              icon={<Done />}
+            />
+            <BottomNavigationAction
+              label="Cancel"
+              type="button"
+              icon={<Close />}
+            />
+          </BottomNavigation>
         </Dialog>
       )}
     </Box>

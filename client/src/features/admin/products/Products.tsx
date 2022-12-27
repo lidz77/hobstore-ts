@@ -2,15 +2,26 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../app/hooks";
 import ProductToolbar from "../../../components/ProductToolbar";
 import ProductDetails from "./ProductDetails";
-import { loadProductProperties, selectProductProps } from "./productPropsSlice";
+import {
+  loadProductProperties,
+  ProductProp,
+  selectProductProps,
+} from "./productPropsSlice";
 
 import ProductsList from "./ProductsList";
-import { loadProducts, selectProducts } from "./productsSlice";
+import {
+  changeInput,
+  createProduct,
+  loadProducts,
+  Product,
+  selectProducts,
+  selectProp,
+} from "./productsSlice";
 
 interface ProductsProps {}
 
 const Products = ({}: ProductsProps) => {
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDialog, setOpenDialog] = useState<boolean>(true);
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);
   const productProperties = useAppSelector(selectProductProps);
@@ -27,6 +38,22 @@ const Products = ({}: ProductsProps) => {
     dispatch(loadProductProperties());
   };
 
+  const handleSelectProductProp = (
+    propName: string,
+    productProp: ProductProp
+  ) => {
+    dispatch(selectProp({ propName, productProp }));
+  };
+  const handleInputChange = (field: string, text: string | number) => {
+    dispatch(changeInput({ field, text }));
+  };
+  const handleSubmit = (product: Product) => {
+    if (product.id === 0) {
+      dispatch(createProduct(product));
+    } else {
+    }
+  };
+
   return (
     <main>
       <ProductToolbar handleDialog={handleDialog} />
@@ -35,6 +62,9 @@ const Products = ({}: ProductsProps) => {
         productsList={products.productsList}
       />
       <ProductDetails
+        productDetails={products.productDetails}
+        handleInputChange={handleInputChange}
+        handleSelectProductProp={handleSelectProductProp}
         handleLoadProductProps={handleLoadProductProps}
         productsIsLoading={products.isLoading}
         openDialog={openDialog}
