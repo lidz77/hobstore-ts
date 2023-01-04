@@ -1,72 +1,111 @@
+import { Close, Delete } from "@mui/icons-material";
 import {
-  Box,
+  Autocomplete,
   FormControl,
-  InputLabel,
+  IconButton,
+  InputAdornment,
+  ListItem,
+  ListItemButton,
+  ListItemText,
   MenuItem,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
+  MenuList,
+  TextField,
+  Typography,
 } from "@mui/material";
-import React, { useState } from "react";
+import { Box } from "@mui/system";
 import { ProductProp } from "../features/admin/products/productPropsSlice";
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 
 interface ProductPropertiesProps {
-  propsList: object;
+  propValue: ProductProp;
+  propsList: { [propName: string]: ProductProp[] };
   handleSelectProductProp: (
     propName: string,
-    productPropType: ProductProp
+    productPropType: ProductProp | null
   ) => void;
+  handleAddNewProp: (modelName: string, name: string) => void;
+  handleDeleteProp: (modelName: string, id: number) => void;
+  hasSecondaryAction?: boolean;
 }
 
 const ProductProperties = ({
+  propValue,
   propsList,
   handleSelectProductProp,
+  handleAddNewProp,
+  handleDeleteProp,
+  hasSecondaryAction,
 }: ProductPropertiesProps) => {
-  const [name, setName] = useState<string>("");
   const propName = Object.keys(propsList)[0];
   const propsArray = Object.values(propsList)[0];
-  const handleSelect = (e: SelectChangeEvent<string>) => {
-    setName(e.target.value);
-    const prop = propsArray.filter(
-      (item: ProductProp) => item.name === e.target.value
+
+  const filterOptions = (options: ProductProp[], { inputValue }: any) => {
+    const filteredOptions = options.filter((option: ProductProp) =>
+      option.name.toLowerCase().includes(inputValue.toLowerCase())
     );
-    handleSelectProductProp(propName, prop[0]);
+    if (filteredOptions.length === 0 && hasSecondaryAction) {
+      return [{ id: 0, name: `Add new ${inputValue}` }, ...filteredOptions];
+    }
+    return filteredOptions;
   };
+
+  const handleChange = (event: any, value: ProductProp | null) => {
+    if (value && value.id === 0) {
+      handleAddNewProp(propName + "s", value.name.replace("Add new ", ""));
+    } else {
+      handleSelectProductProp(propName, value);
+    }
+  };
+
   return (
     <FormControl sx={{ m: 1, width: 200, mt: 3 }}>
-      <Select
-        displayEmpty
-        value={name}
-        onChange={handleSelect}
-        input={<OutlinedInput />}
-        renderValue={(selected) => {
-          if (selected.length === 0) {
-            return <em> Select {propName}</em>;
-          }
-          return selected;
-        }}
-      >
-        <MenuItem disabled value="">
-          <em>Select {propName}</em>
-        </MenuItem>
-        {propsArray.map((item: ProductProp, index: number) => {
+      <Autocomplete
+        // open
+        // disablePortal
+        value={propValue}
+        defaultValue={{ id: 0, name: "" }}
+        id={`${propName}-selectbox`}
+        options={propsArray}
+        renderOption={(props, option) => {
           return (
-            <MenuItem key={index + propName} value={item.name}>
-              {item.name}
-            </MenuItem>
+            <ListItem
+              {...props}
+              role="option"
+              key={`${option.id}-${propName}`}
+              secondaryAction={
+                hasSecondaryAction ? (
+                  <IconButton
+                    edge="end"
+                    aria-label="delete"
+                    onClick={() => handleDeleteProp(propName + "s", option.id)}
+                  >
+                    <Delete />
+                  </IconButton>
+                ) : (
+                  <></>
+                )
+              }
+            >
+              <ListItemButton onClick={(e) => handleChange(e, option)}>
+                <ListItemText primary={option.name} />
+              </ListItemButton>
+            </ListItem>
+            // <MenuItem>{option.name}</MenuItem>
           );
-        })}
-      </Select>
+        }}
+        filterOptions={filterOptions}
+        getOptionLabel={(option: ProductProp) => {
+          return option.name;
+        }}
+        isOptionEqualToValue={(option, value) =>
+          option.id === value.id || value.id === 0
+        }
+        renderInput={(params) => (
+          <TextField {...params} label={propName} variant="outlined" />
+        )}
+        onChange={(e: any, inputValue) => {
+          handleChange(e, inputValue);
+        }}
+      />
     </FormControl>
   );
 };

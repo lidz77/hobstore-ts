@@ -7,14 +7,15 @@ class ProductPropsDataService {
   getAll(): Promise<any> {
     return http.get(`/products/props`);
   }
-  delete(propName: string, id: number): Promise<any> {
-    return http.delete(`/products/${propName}/${id}`);
+  //data should be keyword
+  delete(data: { modelName: string; id: number }): Promise<any> {
+    return http.delete(`/products/props`, { data });
   }
   update(propName: string, id: number, data: object): Promise<any> {
     return http.put(`/products/${propName}/${id}`, data);
   }
-  create(propName: string, data: object): Promise<any> {
-    return http.post(`/products/${propName}`, data);
+  create(data: object): Promise<any> {
+    return http.post(`/products/props`, data);
   }
 }
 

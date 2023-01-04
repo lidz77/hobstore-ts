@@ -59,12 +59,10 @@ const CategoriesList = ({
                         <TableCell padding="checkbox">
                           <Checkbox onClick={() => handleSelectItem(item.id)} />
                         </TableCell>
-                        <TableCell padding="checkbox">{item.id}</TableCell>
-                        <TableCell padding="checkbox">{item.name}</TableCell>
-                        <TableCell padding="checkbox">
-                          {item.description}
-                        </TableCell>
-                        <TableCell padding="checkbox">
+                        <TableCell>{item.id}</TableCell>
+                        <TableCell>{item.name}</TableCell>
+                        <TableCell>{item.description}</TableCell>
+                        <TableCell>
                           <ButtonGroup>
                             <Button
                               color="secondary"

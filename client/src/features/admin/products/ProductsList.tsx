@@ -1,9 +1,9 @@
-import { CheckBox } from "@mui/icons-material";
 import {
   Avatar,
   Box,
   Button,
   ButtonGroup,
+  Checkbox,
   Paper,
   Table,
   TableBody,
@@ -12,18 +12,23 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import React from "react";
 import LoadingBackdrop from "../../../components/LoadingBackdrop";
 import { Product } from "./productsSlice";
 
 interface ProductsListProps {
   productsIsLoading: boolean;
   productsList: Product[];
+  handleEditProduct: (id: number) => void;
+  handleDeleteProduct: (ids: number[] | number) => void;
+  handleSetProductsId: (id: number) => void;
 }
 
 const ProductsList = ({
   productsIsLoading,
   productsList,
+  handleEditProduct,
+  handleDeleteProduct,
+  handleSetProductsId,
 }: ProductsListProps) => {
   const columns = [
     "Select",
@@ -57,12 +62,18 @@ const ProductsList = ({
                   return (
                     <TableRow hover role="checkbox" key={index}>
                       <TableCell padding="checkbox">
-                        <CheckBox />
+                        <Checkbox
+                          onClick={() => handleSetProductsId(item.id)}
+                        />
                       </TableCell>
                       <TableCell>{item.title}</TableCell>
-                      <TableCell>{item.dimension.name}</TableCell>
-                      <TableCell>{item.brand.name}</TableCell>
-                      <TableCell>{item.material.name}</TableCell>
+                      <TableCell>
+                        {item.dimension && item.dimension.name}
+                      </TableCell>
+                      <TableCell>{item.brand && item.brand.name}</TableCell>
+                      <TableCell>
+                        {item.material && item.material.name}
+                      </TableCell>
                       <TableCell>
                         <Avatar
                           sx={{ bgcolor: item.color, width: 30, height: 30 }}
@@ -76,8 +87,17 @@ const ProductsList = ({
                       </TableCell>
                       <TableCell>
                         <ButtonGroup>
-                          <Button color="secondary">Edit</Button>
-                          <Button color="error" variant="outlined">
+                          <Button
+                            color="secondary"
+                            onClick={() => handleEditProduct(item.id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            color="error"
+                            variant="outlined"
+                            onClick={() => handleDeleteProduct(item.id)}
+                          >
                             Delete
                           </Button>
                         </ButtonGroup>

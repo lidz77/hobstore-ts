@@ -8,15 +8,16 @@ class ProductsDataService {
     return http.get("/products");
   }
   create(data: object): Promise<any> {
+    console.log(data);
     return http.post("/products/", data);
   }
   findById(id: number): Promise<any> {
-    return http.post(`/products/${id}`);
+    return http.get(`/products/${id}`);
   }
   update(id: number, data: object): Promise<any> {
     return http.put(`/products/${id}`, { id, data });
   }
-  delete(ids: number[]): Promise<any> {
+  delete(ids: number[] | number): Promise<any> {
     return http.delete("/products/", { params: { idArray: ids } });
   }
 }

@@ -1,3 +1,4 @@
+const e = require("express");
 const db = require("../../models");
 const helper = require("../helper");
 const Op = db.Sequelize.Op;
@@ -12,22 +13,22 @@ const relationalArray = [
   {
     model: Categories,
     as: "category",
-    attributes: ["id","name"],
+    attributes: ["id", "name"],
   },
   {
     model: Dimensions,
     as: "dimension",
-    attributes: ['id',"name"],
+    attributes: ["id", "name"],
   },
   {
     model: Brands,
     as: "brand",
-    attributes: ['id',"name"],
+    attributes: ["id", "name"],
   },
   {
     model: Materials,
     as: "material",
-    attributes: ["id","name"],
+    attributes: ["id", "name"],
   },
   {
     model: ProductImages,
@@ -56,30 +57,40 @@ const clientFindAllArray = [
 ];
 
 exports.create = (req, res) => {
-  const title = req.body.title;
+  console.log(req);
+  const newData = {
+    title: req.body.title,
+    description: req.body.description,
+    available: req.body.available,
+    color: req.body.color,
+    price: req.body.price,
+    brandId: req.body.brand.id === 0 ? null : req.body.brand.id,
+    dimensionId: req.body.dimension.id === 0 ? null : req.body.dimension.id,
+    materialId: req.body.material.id === 0 ? null : req.body.material.id,
+    categoryId: req.body.category.id === 0 ? null : req.body.category.id,
+  };
   let productId;
-  if (!title) {
+  if (!newData.title) {
     res.status(400).send({
       message: "Title must be required",
     });
     return;
   }
-  Products.create(req.body)
+  Products.create(newData)
     .then((productResult) => {
-      console.log(req.body);
+      console.log(productResult);
       productId = productResult.id;
       ProductImages.update(
         { productId: productId },
         {
           where: {
-            id: req.body.productImagesId,
+            id: req.body.imagesIdsArray,
           },
         }
       ).then(
         Products.findByPk(productId, {
           include: relationalArray,
         }).then((result) => {
-          console.log(result);
           res.send(result);
         })
       );
@@ -101,33 +112,34 @@ exports.create = (req, res) => {
 
 exports.findAllProperties = (req, res) => {
   Promise.all([
-    Materials.findAll() , //0
-    Brands.findAll(), // 1
-    Dimensions.findAll(), // 2
-    Categories.findAll() //3
-  ]).then((result) => {
-    const data = {
-      materialsList: result[0],
-      brandsList: result[1],
-      dimensionsList: result[2],
-      categoriesList: result[3],
-    }
-    res.send(data);
-  }).catch((err) => {
-    res.status(500).send({
-      message: err.message || `Error while retrieving union table`
+    Materials.findAll({ attributes: ["id", "name"] }), //0
+    Brands.findAll({ attributes: ["id", "name"] }), // 1
+    Dimensions.findAll({ attributes: ["id", "name"] }), // 2
+    Categories.findAll({ attributes: ["id", "name"] }), //3
+  ])
+    .then((result) => {
+      const data = {
+        materials: result[0],
+        brands: result[1],
+        dimensions: result[2],
+        categories: result[3],
+      };
+      res.send(data);
     })
-  })
-}
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || `Error while retrieving union table`,
+      });
+    });
+};
 
 exports.findAll = (req, res) => {
   Products.findAll({
-  attributes: ['id', 'title', 'description','available', 'color', 'price'],
+    attributes: ["id", "title", "description", "available", "color", "price"],
     where: null,
     include: relationalArray,
   })
     .then((result) => {
-      console.log(result);
       res.send(result);
     })
     .catch((err) => {
@@ -138,7 +150,6 @@ exports.findAll = (req, res) => {
 };
 
 exports.clientFindAll = (req, res) => {
-  console.log(req.query);
   const limit = 4;
   let { pageNumber, searchTerm, brand, dimension, category } = req.query;
   var condition = { title: { [Op.like]: `%${searchTerm}%` } };
@@ -190,7 +201,6 @@ exports.clientFindAll = (req, res) => {
 
 exports.findById = (req, res) => {
   const productId = req.params.id;
-  console.log(req.params);
   Products.findByPk(productId, {
     include: relationalArray,
   })
@@ -203,15 +213,15 @@ exports.findById = (req, res) => {
 };
 
 exports.delete = (req, res) => {
-  console.log(req);
-  const idArray = req.query.idArray;
+  const idArray = Array.isArray(req.query.idArray[0])
+    ? req.query.idArray[0]
+    : [req.query.idArray];
   Products.destroy({
     where: {
       id: idArray,
     },
   })
     .then((result) => {
-      console.log(result);
       if (result > 0) {
         res.send({
           message: `ID ${idArray} delete successfully`,
@@ -233,7 +243,7 @@ exports.delete = (req, res) => {
 exports.update = (req, res) => {
   const id = req.params.id;
   const data = req.body.data;
-  console.log(req);
+  console.log(data);
   Products.update(data, {
     where: {
       id: id,
@@ -243,14 +253,14 @@ exports.update = (req, res) => {
       if (result == 1) {
         Products.findByPk(id)
           .then((result) => {
-            if (data.dimensionId !== 0) {
-              result.setDimension(data.dimensionId);
+            if (data.dimension?.id ?? 0 !== 0) {
+              result.setDimension(data.dimension.id);
             }
-            if (data.brandId !== 0) {
-              result.setBrand(data.brandId);
+            if (data.brand?.id ?? 0 !== 0) {
+              result.setBrand(data.brand.id);
             }
-            if (data.materialId !== 0) {
-              result.setMaterial(data.materialId);
+            if (data.material?.id ?? 0 !== 0) {
+              result.setMaterial(data.material.id);
             }
             // if(data.imageIds !== 0){
             //   result.setImage(data.imageIds);

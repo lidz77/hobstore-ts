@@ -5,9 +5,15 @@ import { Search, SearchIconWrapper, StyleInputBase } from "../styles/Toolbar";
 
 interface ProductToolbarProps {
   handleDialog: () => void;
+  handleDelete: (ids: number | number[]) => void;
+  selectedProducts: number[];
 }
 
-const ProductToolbar = ({ handleDialog }: ProductToolbarProps) => {
+const ProductToolbar = ({
+  handleDialog,
+  handleDelete,
+  selectedProducts,
+}: ProductToolbarProps) => {
   return (
     <Box>
       <Toolbar>
@@ -23,7 +29,15 @@ const ProductToolbar = ({ handleDialog }: ProductToolbarProps) => {
           </IconButton>
         </Box>
         <Box sx={{ display: { xs: "none", md: "flex" } }}>
-          <IconButton size="large" aria-label="Delete product" color="inherit">
+          <IconButton
+            size="large"
+            aria-label="Delete product"
+            color="inherit"
+            disabled={selectedProducts.length === 0 ? true : false}
+            onClick={() => {
+              handleDelete(selectedProducts);
+            }}
+          >
             <Delete />
           </IconButton>
         </Box>
