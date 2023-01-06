@@ -5,7 +5,8 @@ const PORT = process.env.PORT || 3084;
 const clientPort = 3000;
 global.__basedir = __dirname; //base directory
 var corsOptions = {
-  origin: `http://localhost:${clientPort}`,
+  // origin: `http://localhost:${clientPort}`,
+  origin: "*",
 };
 
 app.use(cors(corsOptions));

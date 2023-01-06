@@ -7,6 +7,7 @@ const Op = db.Sequelize.Op; //for find/ filters
 exports.findById = (req, res) => {
   Categories.findByPk(req.params.id)
     .then((result) => {
+      console.log("loaded categories");
       res.send(result);
     })
     .catch((error) => {
