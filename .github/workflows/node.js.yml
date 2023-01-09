@@ -7,7 +7,7 @@ on:
   push:
     branches: ["main"]
     paths-ignore:
-      - "./server/config/**"
+      - "server/config/**"
 
 jobs:
   build:
