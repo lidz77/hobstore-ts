@@ -36,5 +36,5 @@ jobs:
       - name: build
         uses: borales/actions-yarn@v4
         with:
-          run: build --if-present
+          cmd: build --if-present
           dir: "client"
