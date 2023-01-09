@@ -33,6 +33,9 @@ jobs:
         with:
           cmd: install --frozen-lockfile
           dir: "client"
+        with:
+          cmd: install --frozen-lockfile
+          dir: server
       # - name: build
       #   uses: borales/actions-yarn@v4
       #   with:
