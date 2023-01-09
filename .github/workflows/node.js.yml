@@ -28,5 +28,13 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "./server/package-lock.json"
 
-      - run: yarn install --frozen-lockfile
-      - run: yarn build --if-present
+      - name: install depencies files
+        uses: borales/actions-yarn@4
+        with:
+          cmd: yarn install --frozen-lockfile
+          dir: "client"
+      - name: build
+        uses: borales/actions-yarn@4
+        with:
+          run: yarn build --if-present
+          dir: "client"
