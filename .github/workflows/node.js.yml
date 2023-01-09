@@ -31,11 +31,12 @@ jobs:
       - name: install depencies files
         uses: borales/actions-yarn@v4
         with:
-          cmd: install --frozen-lockfile
-          dir: "client"
-        with:
-          cmd: install --frozen-lockfile
-          dir: server
+          - name: client build
+            cmd: install --frozen-lockfile
+            dir: "client"
+          - name: server build
+            cmd: install --frozen-lockfile
+            dir: "server"
       # - name: build
       #   uses: borales/actions-yarn@v4
       #   with:
