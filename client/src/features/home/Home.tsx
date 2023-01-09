@@ -1,12 +1,13 @@
 import { Container } from "@mui/material";
-import React from "react";
+import { Link } from "react-router-dom";
+import ROUTES from "../../app/ROUTES";
 
 interface HomeProps {}
 
 const Home = ({}: HomeProps) => {
   return (
     <Container>
-      <div> this is home page v2</div>
+      <Link to={ROUTES.adminRoute()}>Go to admin dashboard</Link>
     </Container>
   );
 };

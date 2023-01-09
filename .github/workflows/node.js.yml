@@ -28,5 +28,5 @@ jobs:
           cache: "npm"
           cache-dependency-path: "./server/package-lock.json"
 
-      - run: npm ci
-      - run: npm run build --if-present
+      - run: yarn --cwd client install --frozen-lockfile
+      - run: yarn --cwd client build --if-present

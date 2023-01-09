@@ -9,8 +9,8 @@
 /coverage
 
 # production
-#/build
-
+/build
+# http-common.ts
 # misc
 .DS_Store
 .env.local
