@@ -6,7 +6,7 @@ interface HomeProps {}
 const Home = ({}: HomeProps) => {
   return (
     <Container>
-      <div> this is home page</div>
+      <div> this is home page v2</div>
     </Container>
   );
 };
