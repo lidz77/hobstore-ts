@@ -1,13 +1,11 @@
 import { Delete } from "@mui/icons-material";
 import {
-  Grid,
   IconButton,
   ImageList,
   ImageListItem,
   ImageListItemBar,
   styled,
 } from "@mui/material";
-import React from "react";
 
 const Img = styled("img")({
   margin: "auto",

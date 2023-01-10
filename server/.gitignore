@@ -4,7 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-/resources/static/assets
+# /resources/static/assets
 /config/db.config.js
 
 # testing

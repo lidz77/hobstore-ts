@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../../../app/store";
+import { RootState } from "../../../app/store";
 import ProductPropsDataService from "../../../services/products/productprops.services";
 import { selectProp } from "./productsSlice";
 
@@ -138,7 +138,7 @@ export const productPropsSlice = createSlice({
   },
 });
 
-export const {} = productPropsSlice.actions;
+export const { selectProps } = productPropsSlice.actions;
 
 export const selectProductProps = (state: RootState) => state.productProps;
 

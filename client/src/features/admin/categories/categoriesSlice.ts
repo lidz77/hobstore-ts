@@ -1,36 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState, AppThunk } from "../../../app/store";
+import { RootState } from "../../../app/store";
 import CategoriesDataService from "../../../services/categories.services";
-
-export interface Category {
-  id: number;
-  name: string;
-  description: string;
-}
-
-const emptyCategory = (): Category => ({
-  id: 0,
-  name: "",
-  description: "",
-});
-
-export interface CategoriesState {
-  categoryDetails: Category;
-  categoriesList: Category[];
-  isLoading: boolean;
-  hasError: boolean;
-  searchTerm: string;
-  selectedItems: number[];
-}
-
-const initialState: CategoriesState = {
-  categoryDetails: emptyCategory(),
-  categoriesList: [],
-  isLoading: false,
-  hasError: false,
-  searchTerm: "",
-  selectedItems: [],
-};
 
 export const createCategories = createAsyncThunk(
   "categories/createCategories",
@@ -104,6 +74,36 @@ export const getCategoryById = createAsyncThunk(
     return res;
   }
 );
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export const emptyCategory = (): Category => ({
+  id: 0,
+  name: "",
+  description: "",
+});
+
+export interface CategoriesState {
+  categoryDetails: Category;
+  categoriesList: Category[];
+  isLoading: boolean;
+  hasError: boolean;
+  searchTerm: string;
+  selectedItems: number[];
+}
+
+const initialState: CategoriesState = {
+  categoryDetails: emptyCategory(),
+  categoriesList: [],
+  isLoading: false,
+  hasError: false,
+  searchTerm: "",
+  selectedItems: [],
+};
 
 export const categoriesSlice = createSlice({
   name: "categories",

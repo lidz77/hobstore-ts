@@ -1,15 +1,6 @@
 import { Upload } from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Container,
-  FormControl,
-  Grid,
-  ImageList,
-  Input,
-  InputLabel,
-} from "@mui/material";
-import React, { useEffect } from "react";
+import { Box, Button, Container, Grid, Input, InputLabel } from "@mui/material";
+import { useEffect } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { loadProductImages } from "../features/admin/products/productsSlice";
 import ImagesGrid from "./ImagesGrid";
@@ -40,7 +31,7 @@ const ImagesUploader = ({
   const dispatch = useAppDispatch();
   useEffect(() => {
     dispatch(loadProductImages(productId));
-  }, [productId]);
+  }, [dispatch, productId]);
 
   return (
     <Container>

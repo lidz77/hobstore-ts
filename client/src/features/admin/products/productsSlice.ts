@@ -1,11 +1,5 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-  AsyncThunk,
-} from "@reduxjs/toolkit";
-import { useAppDispatch } from "../../../app/hooks";
-import { RootState, AppThunk, AppDispatch } from "../../../app/store";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AppDispatch, RootState } from "../../../app/store";
 import ProductImagesDataService from "../../../services/products/productImages.services";
 import ProductPropsDataService from "../../../services/products/productprops.services";
 import ProductsDataService from "../../../services/products/products.services";
@@ -28,6 +22,31 @@ export const loadProductImages = createAsyncThunk(
   }
 );
 
+// const uploadSingle = async (
+//   files: FileList,
+//   thunkApi: {
+//     dispatch: AppDispatch;
+//   }
+// ) => {
+//   let imgIdsArray: number[] = [];
+//   for (let index = 0; index < files.length; index++) {
+//     await ProductImagesDataService.uploadSingle(files[index], (e: any) => {
+//       thunkApi.dispatch(
+//         setProgressUpload({
+//           idx: index,
+//           percentage: Math.round((100 * e.loaded) / e.total),
+//         })
+//       );
+//     })
+//       .then((result) => {
+//         imgIdsArray = [...imgIdsArray, result.data.id];
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+//   }
+//   return Promise.all(imgIdsArray);
+// };
 const uploadSingle = async (
   files: FileList,
   thunkApi: {
@@ -35,23 +54,23 @@ const uploadSingle = async (
   }
 ) => {
   let imgIdsArray: number[] = [];
+  let promises: Promise<number>[] = [];
   for (let index = 0; index < files.length; index++) {
-    await ProductImagesDataService.uploadSingle(files[index], (e: any) => {
-      thunkApi.dispatch(
-        setProgressUpload({
-          idx: index,
-          percentage: Math.round((100 * e.loaded) / e.total),
-        })
-      );
-    })
-      .then((result) => {
-        imgIdsArray = [...imgIdsArray, result.data.id];
+    promises.push(
+      ProductImagesDataService.uploadSingle(files[index], (e: any) => {
+        thunkApi.dispatch(
+          setProgressUpload({
+            idx: index,
+            percentage: Math.round((100 * e.loaded) / e.total),
+          })
+        );
+      }).then((result) => {
+        return result.data.id;
       })
-      .catch((error) => {
-        console.log(error);
-      });
+    );
   }
-  return Promise.all(imgIdsArray);
+  const imgIds = await Promise.all(promises);
+  return imgIds;
 };
 
 export const uploadImages = createAsyncThunk<

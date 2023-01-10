@@ -1,18 +1,13 @@
-import { Close, Delete } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import {
   Autocomplete,
   FormControl,
   IconButton,
-  InputAdornment,
   ListItem,
   ListItemButton,
   ListItemText,
-  MenuItem,
-  MenuList,
   TextField,
-  Typography,
 } from "@mui/material";
-import { Box } from "@mui/system";
 import { ProductProp } from "../features/admin/products/productPropsSlice";
 
 interface ProductPropertiesProps {
