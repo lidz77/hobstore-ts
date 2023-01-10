@@ -36,6 +36,7 @@ const Products = () =>
 
     useEffect(() => {
       dispatch(loadProducts());
+      dispatch(loadProductProperties());
     }, [dispatch]);
 
     const handleDialog = () => {

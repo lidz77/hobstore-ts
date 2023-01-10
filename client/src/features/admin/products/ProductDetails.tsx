@@ -17,9 +17,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { CirclePicker, ColorResult } from "react-color";
 import { TransitionProps } from "@mui/material/transitions";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { CirclePicker, ColorResult } from "react-color";
+import { useAppDispatch } from "../../../app/hooks";
+import ImagesUploader from "../../../components/ImagesUploader";
 import LoadingBackdrop from "../../../components/LoadingBackdrop";
 import ProductProperties from "../../../components/ProductProperties";
 import { ProductProp, ProductPropsState } from "./productPropsSlice";
@@ -29,8 +31,6 @@ import {
   setImagesInfo,
   uploadImages,
 } from "./productsSlice";
-import ImagesUploader from "../../../components/ImagesUploader";
-import { useAppDispatch } from "../../../app/hooks";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -76,9 +76,9 @@ const ProductDetails = ({
   handleSubmit,
 }: ProductDetailsProps) => {
   const dispatch = useAppDispatch();
-  useEffect(() => {
-    handleLoadProductProps();
-  }, []);
+  // useEffect(() => {
+  //   handleLoadProductProps();
+  // }, []);
   const [imageFiles, setImageFiles] = useState<FileList>();
   const [previewImages, setPreviewImages] = useState<File[]>([]);
 

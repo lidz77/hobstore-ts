@@ -53,7 +53,7 @@ const uploadSingle = async (
     dispatch: AppDispatch;
   }
 ) => {
-  let imgIdsArray: number[] = [];
+  // let imgIdsArray: number[] = [];
   let promises: Promise<number>[] = [];
   for (let index = 0; index < files.length; index++) {
     promises.push(

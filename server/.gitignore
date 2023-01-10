@@ -4,8 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
-# /resources/static/assets/tmp/*
-# /resources/static/assets/uploads/*
+/resources/static/assets/tmp/*
+/resources/static/assets/uploads/*
 
 /config/db.config.js
 
