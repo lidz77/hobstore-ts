@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "yarn"
-          cache-dependency-path: "./client/package-lock.json"
+          cache-dependency-path: "./client/package.json"
 
       - name: install client depencies files
         uses: borales/actions-yarn@v4
