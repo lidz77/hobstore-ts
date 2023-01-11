@@ -1,5 +1,13 @@
 import { Upload } from "@mui/icons-material";
-import { Box, Button, Container, Grid, Input, InputLabel } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  ImageList,
+  Input,
+  InputLabel,
+} from "@mui/material";
 import { useEffect } from "react";
 import { useAppDispatch } from "../app/hooks";
 import { loadProductImages } from "../features/admin/products/productsSlice";
@@ -42,7 +50,7 @@ const ImagesUploader = ({
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <InputLabel sx={{ background: "#4CAF50" }} htmlFor="product-file">
               {previewImages.length
-                ? previewImages.length + "file(s) are selected"
+                ? previewImages.length + " new file(s) are selected"
                 : "Choose images"}
             </InputLabel>
             <Button
@@ -84,20 +92,26 @@ const ImagesUploader = ({
               },
             }}
           >
-            {previewImages && (
-              <ImagesGrid
-                imagesList={previewImages}
-                isLoaded={false}
-                handleRemoveImage={handleRemoveImage}
-              />
-            )}
-            {imagesList && (
-              <ImagesGrid
-                imagesList={imagesList}
-                isLoaded={true}
-                handleRemoveImage={handleRemoveImage}
-              />
-            )}
+            <ImageList
+              sx={{ width: "100%", height: 400 }}
+              cols={3}
+              rowHeight={164}
+            >
+              {imagesList && (
+                <ImagesGrid
+                  imagesList={imagesList}
+                  isLoaded={true}
+                  handleRemoveImage={handleRemoveImage}
+                />
+              )}
+              {previewImages && (
+                <ImagesGrid
+                  imagesList={previewImages}
+                  isLoaded={false}
+                  handleRemoveImage={handleRemoveImage}
+                />
+              )}
+            </ImageList>
           </Grid>
         </Box>
       )}

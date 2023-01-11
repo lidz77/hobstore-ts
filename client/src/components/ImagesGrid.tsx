@@ -30,7 +30,7 @@ const ImagesGrid = ({
   handleRemoveImage,
 }: ImagesGridProps) => {
   return (
-    <ImageList sx={{ width: "100%", height: 450 }} cols={3} rowHeight={164}>
+    <>
       {imagesList.map((item, index: number) => {
         return (
           <ImageListItem key={index}>
@@ -67,7 +67,7 @@ const ImagesGrid = ({
           </ImageListItem>
         );
       })}
-    </ImageList>
+    </>
   );
 };
 
