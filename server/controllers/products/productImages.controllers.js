@@ -17,8 +17,6 @@ const ProductImages = db.productImages;
 exports.uploadImages = async (req, res) => {
   try {
     await uploadMultipleImages(req, res);
-    console.log(req.files);
-    console.log(req.file);
     if (req.files === 0) {
       return res.send("You must select a file.");
     }
@@ -66,7 +64,6 @@ exports.uploadImages = async (req, res) => {
 exports.update = (req, res) => {
   const idArray = req.body.idArray;
   const productId = req.body.productId;
-  console.log(req);
   ProductImages.update(
     { productId: productId },
     {
@@ -76,7 +73,6 @@ exports.update = (req, res) => {
     }
   )
     .then((result) => {
-      console.log(result);
       res.send({
         message: `IDs ${idArray} has been added to product ${productId}`,
       });
@@ -89,7 +85,6 @@ exports.update = (req, res) => {
 };
 
 exports.findByProductId = (req, res) => {
-  console.log("gegege", req);
   const id = req.params.id;
   ProductImages.findAll({
     where: {
@@ -97,7 +92,6 @@ exports.findByProductId = (req, res) => {
     },
   })
     .then((result) => {
-      console.log(result);
       if (result) {
         const images = result.map((item) => {
           return {

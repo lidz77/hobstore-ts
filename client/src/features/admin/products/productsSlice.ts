@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { idText } from "typescript";
 import { AppDispatch, RootState } from "../../../app/store";
 import ProductImagesDataService from "../../../services/products/productImages.services";
 import ProductPropsDataService from "../../../services/products/productprops.services";
@@ -111,7 +112,7 @@ export const editProduct = createAsyncThunk(
       .then((result) => {
         return {
           ...result.data,
-          imagesInfo: [],
+          preUploadImagesInfo: [],
           imagesIdsArray: result.data.productImages.map(
             (item: { id: number }) => item.id
           ),
@@ -203,7 +204,7 @@ export interface ProductsState {
   productsList: Product[];
   selectedProducts: number[];
   imagesList: [];
-  imagesInfo: { percentage: number; name: string }[];
+  preUploadImagesInfo: { percentage: number; name: string }[];
   isLoading: boolean;
   hasError: boolean;
 }
@@ -213,7 +214,7 @@ const initialState: ProductsState = {
   productsList: [],
   selectedProducts: [],
   imagesList: [],
-  imagesInfo: [],
+  preUploadImagesInfo: [],
   isLoading: false,
   hasError: false,
 };
@@ -226,19 +227,21 @@ export const productsSlice = createSlice({
       action: PayloadAction<{ percentage: number; name: string }>
     ) => {
       // console.log(action.payload);
-      state.imagesInfo.push(action.payload);
+      state.preUploadImagesInfo.push(action.payload);
     },
     setProgressUpload: (
       state,
       action: PayloadAction<{ idx: number; percentage: number }>
     ) => {
       const payload = action.payload;
-      state.imagesInfo[payload.idx].percentage = payload.percentage;
+      state.preUploadImagesInfo[payload.idx].percentage = payload.percentage;
     },
     removeImageInfo: (state, action: PayloadAction<number>) => {
-      state.imagesInfo = state.imagesInfo.filter((item, index) => {
-        return index !== action.payload;
-      });
+      state.preUploadImagesInfo = state.preUploadImagesInfo.filter(
+        (item, index) => {
+          return index !== action.payload;
+        }
+      );
     },
     selectProp: (
       state,
@@ -266,7 +269,7 @@ export const productsSlice = createSlice({
     clearDetails: (state) => {
       state.productDetails = emptyProduct();
       state.imagesList = [];
-      state.imagesInfo = [];
+      state.preUploadImagesInfo = [];
     },
     setProductsId: (state, action: PayloadAction<number>) => {
       state.selectedProducts.includes(action.payload)
@@ -337,7 +340,9 @@ export const productsSlice = createSlice({
         state.hasError = false;
       })
       .addCase(uploadImages.fulfilled, (state, action) => {
-        state.productDetails.imagesIdsArray = action.payload;
+        console.log(action.payload);
+        state.productDetails.imagesIdsArray =
+          state.productDetails.imagesIdsArray.concat(action.payload);
         state.isLoading = false;
         state.hasError = false;
       })
@@ -349,6 +354,10 @@ export const productsSlice = createSlice({
         state.productDetails.isLoadingDetails = true;
       })
       .addCase(loadProductImages.fulfilled, (state, action) => {
+        // state.productDetails.imagesIdsArray = [
+        //   ...state.productDetails.imagesIdsArray,
+        //   action.payload.map((item: { id: number }) => item.id),
+        // ];
         state.imagesList = action.payload;
         state.productDetails.isLoadingDetails = false;
       })

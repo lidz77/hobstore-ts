@@ -57,7 +57,6 @@ const clientFindAllArray = [
 ];
 
 exports.create = (req, res) => {
-  console.log(req);
   const newData = {
     title: req.body.title,
     description: req.body.description,
@@ -78,7 +77,6 @@ exports.create = (req, res) => {
   }
   Products.create(newData)
     .then((productResult) => {
-      console.log(productResult);
       productId = productResult.id;
       ProductImages.update(
         { productId: productId },
@@ -241,17 +239,17 @@ exports.delete = (req, res) => {
 };
 
 exports.update = (req, res) => {
-  const id = req.params.id;
+  const productId = req.params.id;
   const data = req.body.data;
-  console.log(data);
+  console.log(req);
   Products.update(data, {
     where: {
-      id: id,
+      id: productId,
     },
   })
     .then((result) => {
       if (result == 1) {
-        Products.findByPk(id)
+        Products.findByPk(productId)
           .then((result) => {
             if (data.dimension?.id ?? 0 !== 0) {
               result.setDimension(data.dimension.id);
@@ -262,32 +260,39 @@ exports.update = (req, res) => {
             if (data.material?.id ?? 0 !== 0) {
               result.setMaterial(data.material.id);
             }
-            // if(data.imageIds !== 0){
-            //   result.setImage(data.imageIds);
-            // }
+            if (data.imagesIdsArray.length !== 0) {
+              ProductImages.update(
+                { productId: productId },
+                {
+                  where: {
+                    id: req.body.data.imagesIdsArray,
+                  },
+                }
+              );
+            }
           })
           .then(
-            Products.findByPk(id, {
+            Products.findByPk(productId, {
               include: relationalArray,
             }).then((result) => {
               res.send({
-                message: `Update product id ${id} successfully`,
+                message: `Update product id ${productId} successfully`,
                 data: {
                   data: result,
-                  id: parseInt(id),
+                  id: parseInt(productId),
                 },
               });
             })
           );
       } else {
         res.send({
-          message: `Cannot update id ${id}. Id not found or req.body is empty`,
+          message: `Cannot update id ${productId}. Id not found or req.body is empty`,
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: `Error while updating id ${id}. Error: ${err}`,
+        message: `Error while updating id ${productId}. Error: ${err}`,
       });
     });
 };

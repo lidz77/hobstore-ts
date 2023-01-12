@@ -109,7 +109,7 @@ const Products = () =>
         <ProductDetails
           imagesHandlers={{
             imagesList: products.imagesList,
-            imagesInfo: products.imagesInfo,
+            imagesInfo: products.preUploadImagesInfo,
           }}
           handleSubmit={handleSubmit}
           handleDeleteProp={handleDeleteProp}

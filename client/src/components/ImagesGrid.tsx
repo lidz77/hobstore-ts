@@ -1,7 +1,6 @@
 import { Delete } from "@mui/icons-material";
 import {
   IconButton,
-  ImageList,
   ImageListItem,
   ImageListItemBar,
   styled,

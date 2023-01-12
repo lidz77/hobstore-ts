@@ -154,7 +154,10 @@ const ProductDetails = ({
                   top: 8,
                   color: (theme) => theme.palette.grey[500],
                 }}
-                onClick={handleDialog}
+                onClick={() => {
+                  handleDialog();
+                  setPreviewImages([]);
+                }}
               >
                 <Close />
               </IconButton>
@@ -299,7 +302,10 @@ const ProductDetails = ({
               label="Cancel"
               type="button"
               icon={<Close />}
-              onClick={handleDialog}
+              onClick={() => {
+                handleDialog();
+                setPreviewImages([]);
+              }}
             />
           </BottomNavigation>
         </Dialog>
