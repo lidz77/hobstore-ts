@@ -19,9 +19,9 @@ interface ImagesUploaderProps {
   handleSelectFiles: (e: any) => void;
   handleUploadImages: () => void;
   previewImages: File[];
-  imagesInfo: any[];
-  handleRemoveImage: (idx: number) => void;
-  imagesList: any[];
+  preUploadImages: { name: string; percentage: number }[];
+  handleRemoveImage: (isLoaded: boolean, id: number) => void;
+  loadedImages: { id: number; alt: string; url: string }[];
   isLoadingDetails: boolean;
   productId: number;
 }
@@ -30,9 +30,9 @@ const ImagesUploader = ({
   handleSelectFiles,
   handleUploadImages,
   previewImages,
-  imagesInfo,
+  preUploadImages,
   handleRemoveImage,
-  imagesList,
+  loadedImages,
   isLoadingDetails,
   productId,
 }: ImagesUploaderProps) => {
@@ -61,7 +61,7 @@ const ImagesUploader = ({
               sx={{
                 float: "right",
               }}
-              disabled={imagesInfo.length === 0}
+              disabled={previewImages.length === 0}
             >
               Upload
               <Upload />
@@ -97,9 +97,9 @@ const ImagesUploader = ({
               cols={3}
               rowHeight={164}
             >
-              {imagesList && (
+              {loadedImages && (
                 <ImagesGrid
-                  imagesList={imagesList}
+                  imagesList={loadedImages}
                   isLoaded={true}
                   handleRemoveImage={handleRemoveImage}
                 />
@@ -115,8 +115,8 @@ const ImagesUploader = ({
           </Grid>
         </Box>
       )}
-      {imagesInfo &&
-        imagesInfo.map((item, index: number) => {
+      {preUploadImages &&
+        preUploadImages.map((item, index: number) => {
           return (
             <Box sx={{ display: " flex", alignItems: "center" }} key={index}>
               <LinearProgressWithLabel

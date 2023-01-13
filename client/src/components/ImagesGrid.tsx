@@ -20,7 +20,7 @@ const Img = styled("img")({
 interface ImagesGridProps {
   imagesList: File[] | any[];
   isLoaded: boolean;
-  handleRemoveImage: (id: number) => void;
+  handleRemoveImage: (isLoaded: boolean, id: number) => void;
 }
 
 const ImagesGrid = ({
@@ -43,7 +43,9 @@ const ImagesGrid = ({
               actionIcon={
                 <IconButton
                   sx={{ color: "white" }}
-                  onClick={() => handleRemoveImage(index)}
+                  onClick={() =>
+                    handleRemoveImage(isLoaded, isLoaded ? item.id : index)
+                  }
                 >
                   <Delete />
                 </IconButton>
@@ -53,7 +55,7 @@ const ImagesGrid = ({
               <Img
                 className="preview"
                 src={`data:image;base64, ${item.url}`}
-                alt={`image-${index}`}
+                alt={`image-${item.id}`}
               />
             ) : (
               <Img

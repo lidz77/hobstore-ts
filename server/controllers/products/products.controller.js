@@ -82,7 +82,7 @@ exports.create = (req, res) => {
         { productId: productId },
         {
           where: {
-            id: req.body.imagesIdsArray,
+            id: req.body.productImages.map((item) => item.id),
           },
         }
       ).then(
@@ -241,7 +241,7 @@ exports.delete = (req, res) => {
 exports.update = (req, res) => {
   const productId = req.params.id;
   const data = req.body.data;
-  console.log(req);
+  console.log(req.body.data);
   Products.update(data, {
     where: {
       id: productId,
@@ -260,14 +260,23 @@ exports.update = (req, res) => {
             if (data.material?.id ?? 0 !== 0) {
               result.setMaterial(data.material.id);
             }
-            if (data.imagesIdsArray.length !== 0) {
+            if (data.productImages.length !== 0) {
               ProductImages.update(
-                { productId: productId },
+                { productId: null },
                 {
                   where: {
-                    id: req.body.data.imagesIdsArray,
+                    productId: productId,
                   },
                 }
+              ).then(
+                ProductImages.update(
+                  { productId: productId },
+                  {
+                    where: {
+                      id: data.productImages.map((item) => item.id),
+                    },
+                  }
+                )
               );
             }
           })

@@ -5,15 +5,6 @@ const fr = require("filereader");
 const uploadMultipleImages = require("../../middlewares/upload");
 const ProductImages = db.productImages;
 
-//need test this function
-// const helper.convertUrl = (blob) => {
-//   return btoa(new Uint8Array(blob).reduce(
-//     function (data, byte){
-//       return data + String.fromCharCode(byte);
-//     }, ''
-//   ))
-// }
-
 exports.uploadImages = async (req, res) => {
   try {
     await uploadMultipleImages(req, res);
@@ -32,7 +23,6 @@ exports.uploadImages = async (req, res) => {
           __basedir + "/resources/static/assets/tmp/" + result.name,
           result.data
         );
-        console.log(result.id);
         return res.send({
           message: "File has been uploaded",
           id: result.id,
@@ -95,6 +85,7 @@ exports.findByProductId = (req, res) => {
       if (result) {
         const images = result.map((item) => {
           return {
+            id: item.id,
             alt: item.name,
             url: helper.convertUrl(item.data),
           };

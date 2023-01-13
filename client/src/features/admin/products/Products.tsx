@@ -53,10 +53,6 @@ const Products = () =>
       handleDialog();
     };
 
-    const handleLoadProductProps = () => {
-      dispatch(loadProductProperties());
-    };
-
     const handleSelectProductProp = (
       propName: string,
       productProp: ProductProp | null
@@ -107,17 +103,14 @@ const Products = () =>
           productsList={products.productsList}
         />
         <ProductDetails
-          imagesHandlers={{
-            imagesList: products.imagesList,
-            imagesInfo: products.preUploadImagesInfo,
-          }}
+          loadedImages={products.loadedImages}
+          preUploadImages={products.preUploadImages}
           handleSubmit={handleSubmit}
           handleDeleteProp={handleDeleteProp}
           handleAddNewProp={handleAddNewProp}
           productDetails={products.productDetails}
           handleInputChange={handleInputChange}
           handleSelectProductProp={handleSelectProductProp}
-          handleLoadProductProps={handleLoadProductProps}
           productsIsLoading={products.isLoading}
           openDialog={openDialog}
           handleDialog={handleDialog}

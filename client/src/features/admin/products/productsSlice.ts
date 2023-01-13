@@ -71,7 +71,9 @@ const uploadSingle = async (
     );
   }
   const imgIds = await Promise.all(promises);
-  return imgIds;
+  return imgIds.map((item) => {
+    return { id: item };
+  });
 };
 
 export const uploadImages = createAsyncThunk<
@@ -112,10 +114,7 @@ export const editProduct = createAsyncThunk(
       .then((result) => {
         return {
           ...result.data,
-          preUploadImagesInfo: [],
-          imagesIdsArray: result.data.productImages.map(
-            (item: { id: number }) => item.id
-          ),
+          preUploadImages: [],
         };
       })
       .catch((error) => {
@@ -180,7 +179,7 @@ export interface Product {
   brand: { id: number; name: string };
   material: { id: number; name: string };
   category: { id: number; name: string };
-  imagesIdsArray: number[];
+  productImages: { id: number }[];
   isLoadingDetails: boolean;
 }
 
@@ -195,7 +194,7 @@ const emptyProduct = (): Product => ({
   brand: { id: 0, name: "" },
   material: { id: 0, name: "" },
   category: { id: 0, name: "" },
-  imagesIdsArray: [],
+  productImages: [],
   isLoadingDetails: false,
 });
 
@@ -203,8 +202,8 @@ export interface ProductsState {
   productDetails: Product;
   productsList: Product[];
   selectedProducts: number[];
-  imagesList: [];
-  preUploadImagesInfo: { percentage: number; name: string }[];
+  loadedImages: { id: number; alt: string; url: string }[];
+  preUploadImages: { percentage: number; name: string }[];
   isLoading: boolean;
   hasError: boolean;
 }
@@ -213,8 +212,8 @@ const initialState: ProductsState = {
   productDetails: emptyProduct(),
   productsList: [],
   selectedProducts: [],
-  imagesList: [],
-  preUploadImagesInfo: [],
+  loadedImages: [],
+  preUploadImages: [],
   isLoading: false,
   hasError: false,
 };
@@ -227,21 +226,50 @@ export const productsSlice = createSlice({
       action: PayloadAction<{ percentage: number; name: string }>
     ) => {
       // console.log(action.payload);
-      state.preUploadImagesInfo.push(action.payload);
+      state.preUploadImages.push(action.payload);
     },
     setProgressUpload: (
       state,
       action: PayloadAction<{ idx: number; percentage: number }>
     ) => {
       const payload = action.payload;
-      state.preUploadImagesInfo[payload.idx].percentage = payload.percentage;
+      state.preUploadImages[payload.idx].percentage = payload.percentage;
     },
-    removeImageInfo: (state, action: PayloadAction<number>) => {
-      state.preUploadImagesInfo = state.preUploadImagesInfo.filter(
-        (item, index) => {
-          return index !== action.payload;
-        }
-      );
+
+    removeImage: (
+      state,
+      action: PayloadAction<{ isLoaded: boolean; id: number }>
+    ) => {
+      if (!action.payload.isLoaded) {
+        state.preUploadImages = state.preUploadImages.filter((item, index) => {
+          return index !== action.payload.id;
+        });
+      } else {
+        state.productDetails.productImages =
+          state.productDetails.productImages.filter(
+            (item) => item.id !== action.payload.id
+          );
+        state.loadedImages = state.loadedImages.filter(
+          (item) => item.id !== action.payload.id
+        );
+      }
+      // !action.payload.isLoaded
+      //   ? (
+      //     state.productDetails.productImages =
+      //       state.productDetails.productImages.filter(
+      //         (item) => item.id !== action.payload.id
+      //       )
+      //       state.productDetails.productImages =
+      //       state.productDetails.productImages.filter(
+      //         (item) => item.id !== action.payload.id
+      //       )
+
+      //       )
+      //   : (state.preUploadImages = state.preUploadImages.filter(
+      //       (item, index) => {
+      //         return index !== action.payload.id;
+      //       }
+      //     ));
     },
     selectProp: (
       state,
@@ -268,8 +296,8 @@ export const productsSlice = createSlice({
     },
     clearDetails: (state) => {
       state.productDetails = emptyProduct();
-      state.imagesList = [];
-      state.preUploadImagesInfo = [];
+      state.loadedImages = [];
+      state.preUploadImages = [];
     },
     setProductsId: (state, action: PayloadAction<number>) => {
       state.selectedProducts.includes(action.payload)
@@ -339,10 +367,10 @@ export const productsSlice = createSlice({
         state.isLoading = false;
         state.hasError = false;
       })
-      .addCase(uploadImages.fulfilled, (state, action) => {
+      .addCase(uploadImages.fulfilled, (state, action: PayloadAction<any>) => {
         console.log(action.payload);
-        state.productDetails.imagesIdsArray =
-          state.productDetails.imagesIdsArray.concat(action.payload);
+        state.productDetails.productImages =
+          state.productDetails.productImages.concat(action.payload);
         state.isLoading = false;
         state.hasError = false;
       })
@@ -354,11 +382,7 @@ export const productsSlice = createSlice({
         state.productDetails.isLoadingDetails = true;
       })
       .addCase(loadProductImages.fulfilled, (state, action) => {
-        // state.productDetails.imagesIdsArray = [
-        //   ...state.productDetails.imagesIdsArray,
-        //   action.payload.map((item: { id: number }) => item.id),
-        // ];
-        state.imagesList = action.payload;
+        state.loadedImages = action.payload;
         state.productDetails.isLoadingDetails = false;
       })
       .addCase(loadProductImages.rejected, (state, action) => {
@@ -375,7 +399,7 @@ export const {
   setProductsId,
   setImagesInfo,
   setProgressUpload,
-  removeImageInfo,
+  removeImage,
 } = productsSlice.actions;
 export const selectProducts = (state: RootState) => state.products;
 export default productsSlice.reducer;

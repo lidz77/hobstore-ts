@@ -27,7 +27,7 @@ import ProductProperties from "../../../components/ProductProperties";
 import { ProductProp, ProductPropsState } from "./productPropsSlice";
 import {
   Product,
-  removeImageInfo,
+  removeImage,
   setImagesInfo,
   uploadImages,
 } from "./productsSlice";
@@ -48,8 +48,8 @@ interface ProductDetailsProps {
   openDialog: boolean;
   productProperties: ProductPropsState;
   productDetails: Product;
-  imagesHandlers: { imagesList: []; imagesInfo: {}[] };
-  handleLoadProductProps: () => void;
+  loadedImages: { id: number; alt: string; url: string }[];
+  preUploadImages: { name: string; percentage: number }[];
   handleSelectProductProp: (
     propName: string,
     productPropType: ProductProp | null
@@ -62,11 +62,11 @@ interface ProductDetailsProps {
 }
 
 const ProductDetails = ({
-  imagesHandlers,
+  loadedImages,
+  preUploadImages,
   productsIsLoading,
   openDialog,
   productProperties,
-  handleLoadProductProps,
   handleSelectProductProp,
   productDetails,
   handleInputChange,
@@ -76,30 +76,26 @@ const ProductDetails = ({
   handleSubmit,
 }: ProductDetailsProps) => {
   const dispatch = useAppDispatch();
-  // useEffect(() => {
-  //   handleLoadProductProps();
-  // }, []);
   const [imageFiles, setImageFiles] = useState<FileList>();
   const [previewImages, setPreviewImages] = useState<File[]>([]);
 
-  const handleRemoveImage = (idx: number) => {
-    if (!imageFiles) {
-      return;
-    }
+  const handleRemoveImage = (isLoaded: boolean, id: number) => {
     const dt = new DataTransfer();
-    for (let index = 0; index < imageFiles.length; index++) {
-      const image = imageFiles[index];
-      if (idx !== index) {
-        dt.items.add(image); // here you exclude the file. thus removing it.
+    if (typeof imageFiles !== "undefined") {
+      for (let index = 0; index < imageFiles.length; index++) {
+        const image = imageFiles[index];
+        if (id !== index) {
+          dt.items.add(image); // here you exclude the file. thus removing it.
+        }
       }
     }
     setImageFiles(dt.files);
     setPreviewImages((prev) =>
       prev.filter((item, index) => {
-        return index !== idx;
+        return index !== id;
       })
     );
-    dispatch(removeImageInfo(idx));
+    dispatch(removeImage({ isLoaded, id }));
   };
 
   const handleSelectFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -281,9 +277,9 @@ const ProductDetails = ({
                       handleRemoveImage={handleRemoveImage}
                       handleUploadImages={handleUploadImages}
                       previewImages={previewImages}
-                      imagesInfo={imagesHandlers.imagesInfo}
+                      preUploadImages={preUploadImages}
                       isLoadingDetails={productDetails.isLoadingDetails}
-                      imagesList={imagesHandlers.imagesList}
+                      loadedImages={loadedImages}
                       productId={productDetails.id}
                     />
                   </Stack>
@@ -296,7 +292,10 @@ const ProductDetails = ({
               label="Done"
               type="submit"
               icon={<Done />}
-              onClick={handleSubmit}
+              onClick={() => {
+                handleSubmit();
+                setPreviewImages([]);
+              }}
             />
             <BottomNavigationAction
               label="Cancel"
